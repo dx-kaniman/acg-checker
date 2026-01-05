@@ -4,6 +4,8 @@
   const listEl = document.getElementById("cardList");
   const progressEl = document.getElementById("progressText");
   const resetBtn = document.getElementById("resetBtn");
+  const onlyUndoneEl = document.getElementById("onlyUndone");
+
 
   const storageKey = (() => {
     const scope = location.pathname.replace(/\/index\.html$/, "/");
@@ -65,6 +67,10 @@
     for (const c of cards) {
       const owned = getOwned(c.id);
       const done = owned >= c.required;
+
+      // 未達成のみにチェックがついている場合、達成済みのカードは表示しない
+      const onlyUndone = !!onlyUndoneEl?.checked;
+      if (onlyUndone && done) continue;
 
       const li = document.createElement("li");
       li.className = `item${done ? " is-done" : ""}`;
@@ -128,11 +134,18 @@
     renderList();
   }
 
+  // リセット時に confirm で確認し、OK のときだけ所持枚数をクリアする
   resetBtn.addEventListener("click", () => {
+    const ok = window.confirm("所持枚数をすべてリセットします。よろしいですか？");
+    if (!ok) return;
+
     ownedMap = {};
     saveOwned(ownedMap);
     render();
   });
+
+  // 未達成のみチェックの変更時は再描画
+  onlyUndoneEl?.addEventListener("change", render);
 
   render();
 })();
