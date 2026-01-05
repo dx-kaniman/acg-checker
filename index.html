@@ -1,0 +1,27 @@
+<!-- 画面骨格（進捗・リスト・リセット） -->
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>キメラサイクル原典 入手チェッカー</title>
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body>
+  <header class="container header">
+    <h1>キメラサイクル原典 入手チェッカー</h1>
+
+    <div class="toolbar">
+      <div id="progressText" class="progress">0 / 0 (0.000%)</div>
+      <button id="resetBtn" class="btn btn-secondary" type="button">所持枚数をリセット</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <ul id="cardList" class="list" aria-live="polite"></ul>
+  </main>
+
+  <script src="./cards.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
