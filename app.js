@@ -81,6 +81,7 @@
       check.textContent = "✓";
 
       const info = document.createElement("div");
+      info.className = "info";
       const name = document.createElement("span");
       name.className = "name";
       name.textContent = c.name;
