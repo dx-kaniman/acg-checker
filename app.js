@@ -5,7 +5,7 @@
   const progressEl = document.getElementById("progressText");
   const resetBtn = document.getElementById("resetBtn");
   const onlyUndoneEl = document.getElementById("onlyUndone");
-
+  const highlightOverEl = document.getElementById("highlightOver");
 
   const storageKey = (() => {
     const scope = location.pathname.replace(/\/index\.html$/, "/");
@@ -105,8 +105,10 @@
         render();
       });
 
+      const highlightOver = !!highlightOverEl?.checked;
       const count = document.createElement("div");
       count.className = "count";
+      if (owned > c.required && highlightOver) count.classList.add("is-over");
       count.textContent = `${owned}`;
 
       const plus = document.createElement("button");
@@ -147,6 +149,8 @@
 
   // 未達成のみチェックの変更時は再描画
   onlyUndoneEl?.addEventListener("change", render);
+  // 超過を強調表示チェックの変更時は再描画
+  highlightOverEl?.addEventListener("change", render);
 
   render();
 })();

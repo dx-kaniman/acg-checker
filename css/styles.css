@@ -116,6 +116,11 @@ body {
   border: 1px solid var(--border);
   border-radius: 10px;
 }
+.count.is-over {
+  color: #1f4d2c;
+  background: #9fe5b6;
+  border-color: #63c983;
+}
 
 .btn-mini {
   width: 30px;
