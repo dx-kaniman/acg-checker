@@ -55,7 +55,7 @@ body {
   border: 1px solid var(--border);
   background: var(--panel);
   /* border-radius: 14px; */
-  padding: 2px 8px 2px 2px;
+  padding: 2px 4px 2px 0;
   display: grid;
   grid-template-columns: 28px 1fr auto;
   align-items: center;
@@ -81,6 +81,8 @@ body {
   opacity: 1;
   transform: scale(1);
   animation: pop .18s ease-out;
+  color: green;
+  font-size: 150%;
 }
 @keyframes pop {
   from { transform: scale(.6); }
@@ -89,6 +91,7 @@ body {
 
 .name {
   font-weight: 600;
+  font-size: 14px;
 }
 .meta {
   color: var(--muted);
