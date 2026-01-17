@@ -85,9 +85,11 @@
     const text = `${got} / ${totalRequired} (${pct.toFixed(3)}%)`;
     if (progressValueEl) {
       progressValueEl.textContent = text;
+      updateCompletionState(got, totalRequired);
       return;
     }
     progressEl.textContent = `達成率：${text}`;
+    updateCompletionState(got, totalRequired);
   }
 
   /**
@@ -190,6 +192,18 @@
   function render() {
     renderProgress();
     renderList();
+  }
+
+  /**
+   * 達成率100%の状態に応じて表示を切り替える
+   */
+  function updateCompletionState(got, totalRequired) {
+    const isComplete = totalRequired > 0 && got >= totalRequired;
+    if (isComplete) {
+      progressEl?.classList.add("is-complete");
+      return;
+    }
+    progressEl?.classList.remove("is-complete");
   }
 
   /**

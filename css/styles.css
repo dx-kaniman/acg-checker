@@ -28,8 +28,40 @@ body {
   justify-content: flex-start;
   flex-wrap: wrap;
 }
+.toolbar-progress { margin-top: 6px; }
 
 .progress { color: var(--muted); font-variant-numeric: tabular-nums; }
+.progress.is-complete {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 48px 6px 12px;
+  border-radius: 12px;
+  border: 1px solid #63c983;
+  color: var(--text);
+  background: rgba(159, 229, 182, 0.2);
+  animation: progress-glow 2.4s ease-in-out infinite;
+}
+.progress.is-complete::after {
+  content: "👑";
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 22px;
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 0;
+}
+@keyframes progress-glow {
+  0% { box-shadow: 0 0 0 rgba(159, 229, 182, 0.0); }
+  50% { box-shadow: 0 0 16px rgba(159, 229, 182, 0.55); }
+  100% { box-shadow: 0 0 0 rgba(159, 229, 182, 0.0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .progress.is-complete { animation: none; }
+}
 
 /* 表示フィルター */
 .toggle {
