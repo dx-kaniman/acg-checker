@@ -4,7 +4,7 @@
   const listEl = document.getElementById("cardList");
   const progressEl = document.getElementById("progressText");
   const resetBtn = document.getElementById("resetBtn");
-  const onlyUndoneEl = document.getElementById("onlyUndone");
+  const statusFilterEl = document.getElementById("statusFilter");
   const highlightOverEl = document.getElementById("highlightOver");
 
   const storageKey = (() => {
@@ -61,16 +61,22 @@
     progressEl.textContent = `${got} / ${totalRequired} (${pct.toFixed(3)}%)`;
   }
 
+  /**
+   * 表示条件に合わせてカード一覧を描画する
+   */
   function renderList() {
     listEl.innerHTML = "";
+    let renderedCount = 0;
 
     for (const c of cards) {
       const owned = getOwned(c.id);
       const done = owned >= c.required;
+      const over = owned > c.required;
 
-      // 未達成のみにチェックがついている場合、達成済みのカードは表示しない
-      const onlyUndone = !!onlyUndoneEl?.checked;
-      if (onlyUndone && done) continue;
+      // 表示フィルターに応じてリストを絞り込む
+      const filterValue = statusFilterEl?.value ?? "all";
+      if (filterValue === "undone" && done) continue;
+      if (filterValue === "over" && !over) continue;
 
       const li = document.createElement("li");
       li.className = `item${done ? " is-done" : ""}`;
@@ -108,7 +114,7 @@
       const highlightOver = !!highlightOverEl?.checked;
       const count = document.createElement("div");
       count.className = "count";
-      if (owned > c.required && highlightOver) count.classList.add("is-over");
+      if (over && highlightOver) count.classList.add("is-over");
       count.textContent = `${owned}`;
 
       const plus = document.createElement("button");
@@ -129,6 +135,14 @@
       li.appendChild(controls);
 
       listEl.appendChild(li);
+      renderedCount += 1;
+    }
+
+    if (renderedCount === 0) {
+      const empty = document.createElement("li");
+      empty.className = "list-empty";
+      empty.textContent = "一致するデータがありません。";
+      listEl.appendChild(empty);
     }
   }
 
@@ -147,8 +161,8 @@
     render();
   });
 
-  // 未達成のみチェックの変更時は再描画
-  onlyUndoneEl?.addEventListener("change", render);
+  // 表示フィルターの変更時は再描画
+  statusFilterEl?.addEventListener("change", render);
   // 超過を強調表示チェックの変更時は再描画
   highlightOverEl?.addEventListener("change", render);
 

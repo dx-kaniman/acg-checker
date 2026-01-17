@@ -18,9 +18,15 @@
     <div class="toolbar">
       <div id="progressText" class="progress">0 / 0 (0.000%)</div>
       <button id="resetBtn" class="btn btn-secondary" type="button">所持枚数をリセット</button>
+      <!-- TODO: progressTextとcardListの内容を画像化して出力するボタンの追加（必要に応じてprogressTextの位置は変更する） -->
     </div>
     <label class="toggle">
-      <input id="onlyUndone" type="checkbox" />未達成のみ
+      表示:
+      <select id="statusFilter">
+        <option value="all" selected>全て</option>
+        <option value="undone">未達成のみ</option>
+        <option value="over">超過のみ</option>
+      </select>
     </label>
     <label class="toggle">
       <input id="highlightOver" type="checkbox" />超過を強調表示

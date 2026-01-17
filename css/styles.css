@@ -28,7 +28,7 @@ body {
 
 .progress { color: var(--muted); font-variant-numeric: tabular-nums; }
 
-/* 未達成のみトグル */
+/* 表示フィルター */
 .toggle {
   display: inline-flex;
   align-items: center;
@@ -37,6 +37,13 @@ body {
   user-select: none;
 }
 .toggle input { transform: translateY(1px); }
+.toggle select {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 4px 8px;
+}
 
 .btn {
   border: 1px solid var(--border);
@@ -50,6 +57,14 @@ body {
 .btn[disabled] { opacity: .5; cursor: not-allowed; }
 
 .list { list-style: none; padding: 0; margin: 0; }
+.list-empty {
+  border: 1px dashed var(--border);
+  color: var(--muted);
+  padding: 12px;
+  border-radius: 10px;
+  text-align: center;
+  margin-top: 8px;
+}
 
 .item {
   border: 1px solid var(--border);
