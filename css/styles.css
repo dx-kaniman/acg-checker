@@ -16,6 +16,8 @@ body {
 }
 
 .container { max-width: 980px; margin: 0 auto; padding: 16px; }
+.header { padding-bottom: 8px; }
+.main { padding-top: 6px; }
 .header h1 { margin: 0 0 10px; font-size: 20px; }
 .header-note { margin: 0 0 8px; }
 
@@ -23,7 +25,7 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  justify-content: space-between;
+  justify-content: flex-start;
   flex-wrap: wrap;
 }
 
@@ -43,8 +45,27 @@ body {
   background: var(--panel);
   color: var(--text);
   border-radius: 10px;
-  padding: 4px 8px;
+  padding: 8px 10px;
+  line-height: 1.2;
 }
+.options { position: relative; }
+.options-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 200px;
+  z-index: 10;
+}
+.options-menu[hidden] { display: none; }
+.options-menu .btn { width: 100%; }
+.options-menu .btn { margin-top: 6px; }
 
 .btn {
   border: 1px solid var(--border);

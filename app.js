@@ -3,15 +3,21 @@
   const cards = window.ACG_REQUIRED_CARDS ?? [];
   const listEl = document.getElementById("cardList");
   const progressEl = document.getElementById("progressText");
+  const progressValueEl = document.getElementById("progressValue");
   const resetBtn = document.getElementById("resetBtn");
   const statusFilterEl = document.getElementById("statusFilter");
   const highlightOverEl = document.getElementById("highlightOver");
+  const optionsBtn = document.getElementById("optionsBtn");
+  const optionsMenu = document.getElementById("optionsMenu");
 
   const storageKey = (() => {
     const scope = location.pathname.replace(/\/index\.html$/, "/");
     return `acg-checker::owned::${scope}`; // GitHub Pages 同一オリジン衝突を避ける
   })();
 
+  /**
+   * 所持数の保存データを読み込む
+   */
   function loadOwned() {
     try {
       const raw = localStorage.getItem(storageKey);
@@ -21,6 +27,9 @@
     }
   }
 
+  /**
+   * 所持数の保存データを書き込む
+   */
   function saveOwned(owned) {
     try {
       localStorage.setItem(storageKey, JSON.stringify(owned));
@@ -31,19 +40,31 @@
 
   let ownedMap = loadOwned();
 
+  /**
+   * 所持数を0以上の整数に正規化する
+   */
   function clampOwned(n) {
     return Number.isFinite(n) ? Math.max(0, Math.trunc(n)) : 0;
   }
 
+  /**
+   * 指定カードの所持数を取得する
+   */
   function getOwned(cardId) {
     return clampOwned(ownedMap[cardId] ?? 0);
   }
 
+  /**
+   * 指定カードの所持数を保存する
+   */
   function setOwned(cardId, value) {
     ownedMap[cardId] = clampOwned(value);
     saveOwned(ownedMap);
   }
 
+  /**
+   * 達成率計算に必要な合計値を返す
+   */
   function calcProgress() {
     const totalRequired = cards.reduce((acc, c) => acc + (c.required ?? 0), 0);
     const got = cards.reduce((acc, c) => {
@@ -56,9 +77,17 @@
     return { got, totalRequired, pct };
   }
 
+  /**
+   * 進捗表示のテキストを更新する
+   */
   function renderProgress() {
     const { got, totalRequired, pct } = calcProgress();
-    progressEl.textContent = `${got} / ${totalRequired} (${pct.toFixed(3)}%)`;
+    const text = `${got} / ${totalRequired} (${pct.toFixed(3)}%)`;
+    if (progressValueEl) {
+      progressValueEl.textContent = text;
+      return;
+    }
+    progressEl.textContent = `達成率：${text}`;
   }
 
   /**
@@ -146,20 +175,71 @@
     }
   }
 
+  /**
+   * オプションメニューの開閉状態を反映する
+   */
+  function setOptionsOpen(isOpen) {
+    if (!optionsBtn || !optionsMenu) return;
+    optionsMenu.hidden = !isOpen;
+    optionsBtn.setAttribute("aria-expanded", String(isOpen));
+  }
+
+  /**
+   * 進捗と一覧の表示を更新する
+   */
   function render() {
     renderProgress();
     renderList();
   }
 
-  // リセット時に confirm で確認し、OK のときだけ所持枚数をクリアする
-  resetBtn.addEventListener("click", () => {
+  /**
+   * オプションボタン押下時に開閉を切り替える
+   */
+  function handleOptionsClick(event) {
+    event.stopPropagation();
+    const isOpen = optionsMenu ? !optionsMenu.hidden : false;
+    setOptionsOpen(!isOpen);
+  }
+
+  /**
+   * メニュー外クリック時にオプションを閉じる
+   */
+  function handleDocumentClick(event) {
+    if (!optionsMenu || !optionsBtn || optionsMenu.hidden) return;
+    const target = event.target;
+    if (target instanceof Node && (optionsMenu.contains(target) || optionsBtn.contains(target))) return;
+    setOptionsOpen(false);
+  }
+
+  /**
+   * Escapeキー押下時にオプションを閉じる
+   */
+  function handleDocumentKeydown(event) {
+    if (event.key !== "Escape") return;
+    if (optionsMenu?.hidden ?? true) return;
+    setOptionsOpen(false);
+    optionsBtn?.focus();
+  }
+
+  /**
+   * リセット確認後に所持枚数を初期化する
+   */
+  function handleResetClick() {
+    setOptionsOpen(false);
     const ok = window.confirm("所持枚数をすべてリセットします。よろしいですか？");
     if (!ok) return;
 
     ownedMap = {};
     saveOwned(ownedMap);
     render();
-  });
+  }
+
+  optionsBtn?.addEventListener("click", handleOptionsClick);
+  document.addEventListener("click", handleDocumentClick);
+  document.addEventListener("keydown", handleDocumentKeydown);
+
+  // リセット時に confirm で確認し、OK のときだけ所持枚数をクリアする
+  resetBtn.addEventListener("click", handleResetClick);
 
   // 表示フィルターの変更時は再描画
   statusFilterEl?.addEventListener("change", render);

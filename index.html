@@ -25,18 +25,26 @@
           <option value="over">超過のみ</option>
         </select>
       </label>
-      <label class="toggle">
-        <input id="highlightOver" type="checkbox" />超過を強調表示
-      </label>
+      <div class="options">
+        <button id="optionsBtn" class="btn btn-secondary" type="button" aria-expanded="false" aria-controls="optionsMenu">オプション</button>
+        <div id="optionsMenu" class="options-menu" hidden>
+          <label class="toggle">
+            <input id="highlightOver" type="checkbox" />超過を強調表示
+          </label>
+          <button id="resetBtn" class="btn btn-secondary" type="button">所持枚数をリセット</button>
+        </div>
+      </div>
+      <!-- TODO: progressTextとcardListの内容を画像化して出力するボタンの追加（必要に応じてprogressTextの位置は変更する） -->
     </div>
     <div class="toolbar">
-      <div id="progressText" class="progress">0 / 0 (0.000%)</div>
-      <button id="resetBtn" class="btn btn-secondary" type="button">所持枚数をリセット</button>
-      <!-- TODO: progressTextとcardListの内容を画像化して出力するボタンの追加（必要に応じてprogressTextの位置は変更する） -->
+      <div id="progressText" class="progress">
+        <span class="progress-label">達成率：</span>
+        <span id="progressValue">0 / 0 (0.000%)</span>
+      </div>
     </div>
   </header>
 
-  <main class="container">
+  <main class="container main">
     <ul id="cardList" class="list" aria-live="polite"></ul>
   </main>
 
