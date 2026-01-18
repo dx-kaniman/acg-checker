@@ -5,6 +5,9 @@
   const progressEl = document.getElementById("progressText");
   const progressValueEl = document.getElementById("progressValue");
   const resetBtn = document.getElementById("resetBtn");
+  const guideBtn = document.getElementById("guideBtn");
+  const guideModal = document.getElementById("guideModal");
+  const guideOkBtn = document.getElementById("guideOkBtn");
   const statusFilterEl = document.getElementById("statusFilter");
   const highlightOverEl = document.getElementById("highlightOver");
   const optionsBtn = document.getElementById("optionsBtn");
@@ -17,6 +20,10 @@
   const settingsKey = (() => {
     const scope = location.pathname.replace(/\/index\.html$/, "/");
     return `acg-checker::settings::${scope}`;
+  })();
+  const guideKey = (() => {
+    const scope = location.pathname.replace(/\/index\.html$/, "/");
+    return `acg-checker::guide::${scope}`;
   })();
 
   /**
@@ -67,6 +74,45 @@
     } catch (e) {
       console.warn("Failed to save settings:", e);
     }
+  }
+
+  /**
+   * 説明モーダルの表示済み状態を読み込む
+   */
+  function loadGuideSeen() {
+    try {
+      return localStorage.getItem(guideKey) === "1";
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * 説明モーダルの表示済み状態を保存する
+   */
+  function saveGuideSeen() {
+    try {
+      localStorage.setItem(guideKey, "1");
+    } catch (e) {
+      console.warn("Failed to save guide state:", e);
+    }
+  }
+
+  /**
+   * 説明モーダルを開く
+   */
+  function openGuideModal() {
+    if (!guideModal) return;
+    guideModal.hidden = false;
+    guideOkBtn?.focus();
+  }
+
+  /**
+   * 説明モーダルを閉じる
+   */
+  function closeGuideModal() {
+    if (!guideModal) return;
+    guideModal.hidden = true;
   }
 
   /**
@@ -279,9 +325,40 @@
    */
   function handleDocumentKeydown(event) {
     if (event.key !== "Escape") return;
-    if (optionsMenu?.hidden ?? true) return;
+    const isOptionsOpen = !(optionsMenu?.hidden ?? true);
+    if (isOptionsOpen) {
+      setOptionsOpen(false);
+      optionsBtn?.focus();
+    }
+    if (!(guideModal?.hidden ?? true)) {
+      closeGuideModal();
+    }
+  }
+
+  /**
+   * 説明ボタン押下時にモーダルを開く
+   */
+  function handleGuideButtonClick() {
     setOptionsOpen(false);
-    optionsBtn?.focus();
+    openGuideModal();
+  }
+
+  /**
+   * モーダルのOK押下時に表示済みを保存して閉じる
+   */
+  function handleGuideOkClick() {
+    saveGuideSeen();
+    closeGuideModal();
+  }
+
+  /**
+   * モーダル外クリック時に閉じる
+   */
+  function handleGuideModalClick(event) {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+    if (target.dataset.modalClose !== "true") return;
+    closeGuideModal();
   }
 
   /**
@@ -298,11 +375,15 @@
   }
 
   optionsBtn?.addEventListener("click", handleOptionsClick);
+  guideBtn?.addEventListener("click", handleGuideButtonClick);
+  guideOkBtn?.addEventListener("click", handleGuideOkClick);
+  guideModal?.addEventListener("click", handleGuideModalClick);
   document.addEventListener("click", handleDocumentClick);
   document.addEventListener("keydown", handleDocumentKeydown);
 
   // 初期表示は保存済みの表示設定を反映してから描画する
   applySettings(loadSettings());
+  if (!loadGuideSeen()) openGuideModal();
 
   // リセット時に confirm で確認し、OK のときだけ所持枚数をクリアする
   resetBtn.addEventListener("click", handleResetClick);

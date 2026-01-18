@@ -100,6 +100,42 @@ body {
 .options-menu .btn { width: 100%; }
 .options-menu .btn { margin-top: 6px; }
 
+.modal {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 20;
+}
+.modal[hidden] { display: none; }
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 7, 10, 0.7);
+}
+.modal-panel {
+  position: relative;
+  z-index: 1;
+  max-width: 520px;
+  width: min(520px, calc(100% - 32px));
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+.modal-panel h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+.modal-panel p {
+  margin: 0 0 12px;
+  color: var(--muted);
+}
+.modal-actions {
+  text-align: right;
+}
+
 .btn {
   border: 1px solid var(--border);
   background: var(--panel);
