@@ -14,6 +14,10 @@
     const scope = location.pathname.replace(/\/index\.html$/, "/");
     return `acg-checker::owned::${scope}`; // GitHub Pages 同一オリジン衝突を避ける
   })();
+  const settingsKey = (() => {
+    const scope = location.pathname.replace(/\/index\.html$/, "/");
+    return `acg-checker::settings::${scope}`;
+  })();
 
   /**
    * 所持数の保存データを読み込む
@@ -36,6 +40,51 @@
     } catch (e) {
       console.warn("Failed to save:", e);
     }
+  }
+
+  /**
+   * 表示設定の保存データを読み込む
+   */
+  function loadSettings() {
+    try {
+      const raw = localStorage.getItem(settingsKey);
+      const saved = raw ? JSON.parse(raw) : {};
+      return {
+        statusFilter: saved.statusFilter ?? "all",
+        highlightOver: !!saved.highlightOver,
+      };
+    } catch {
+      return { statusFilter: "all", highlightOver: false };
+    }
+  }
+
+  /**
+   * 表示設定の保存データを書き込む
+   */
+  function saveSettings(settings) {
+    try {
+      localStorage.setItem(settingsKey, JSON.stringify(settings));
+    } catch (e) {
+      console.warn("Failed to save settings:", e);
+    }
+  }
+
+  /**
+   * 画面に保存済みの表示設定を反映する
+   */
+  function applySettings(settings) {
+    if (statusFilterEl) statusFilterEl.value = settings.statusFilter ?? "all";
+    if (highlightOverEl) highlightOverEl.checked = !!settings.highlightOver;
+  }
+
+  /**
+   * 現在の画面状態から表示設定を取得する
+   */
+  function collectSettings() {
+    return {
+      statusFilter: statusFilterEl?.value ?? "all",
+      highlightOver: !!highlightOverEl?.checked,
+    };
   }
 
   let ownedMap = loadOwned();
@@ -252,13 +301,22 @@
   document.addEventListener("click", handleDocumentClick);
   document.addEventListener("keydown", handleDocumentKeydown);
 
+  // 初期表示は保存済みの表示設定を反映してから描画する
+  applySettings(loadSettings());
+
   // リセット時に confirm で確認し、OK のときだけ所持枚数をクリアする
   resetBtn.addEventListener("click", handleResetClick);
 
   // 表示フィルターの変更時は再描画
-  statusFilterEl?.addEventListener("change", render);
+  statusFilterEl?.addEventListener("change", () => {
+    saveSettings(collectSettings());
+    render();
+  });
   // 超過を強調表示チェックの変更時は再描画
-  highlightOverEl?.addEventListener("change", render);
+  highlightOverEl?.addEventListener("change", () => {
+    saveSettings(collectSettings());
+    render();
+  });
 
   render();
 })();
