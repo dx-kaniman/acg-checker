@@ -48,7 +48,7 @@ body {
   position: absolute;
   right: 14px;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-60%);
   font-size: 22px;
   opacity: 0.55;
   pointer-events: none;
